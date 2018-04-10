@@ -1,0 +1,5 @@
+# This will configure a default manager-gui user:
+# name of file like a host name in root .yml
+
+admin_username: admin
+admin_password: adminsecret

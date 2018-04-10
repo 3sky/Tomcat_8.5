@@ -1,0 +1,64 @@
+--- 
+    - name: Install vim
+      apt:
+        name: vim
+        state: present
+        update_cache: yes  
+
+    - name: Install openjdk-8-jdk
+      apt: 
+        name: openjdk-8-jdk
+        state: present
+        update_cache: yes
+
+    - name: Create /opt/tomcat
+      file: 
+        path: /opt/tomcat
+        state: directory
+
+    - name: Download tomcat && extract apache-tomcat-8.5.30.tar.gz
+      unarchive:
+        src: http://www-eu.apache.org/dist/tomcat/tomcat-8/v8.5.30/bin/apache-tomcat-8.5.30.tar.gz
+        dest: /opt/tomcat
+        extra_opts: [--strip-components=1]
+        remote_src: yes
+
+    - name: Add group "tomcat"
+      group: 
+        name: tomcat
+
+    - name: Add user "tomcat"
+      user: 
+        name: tomcat 
+        group: tomcat
+        shell: /bin/bash
+
+    - name: Create /opt/tomcat
+      file: 
+        path: /opt/tomcat/logs
+        state: directory
+
+    - name: Change owner /opt/tomcat
+      file:
+        path: /opt/tomcat/ 
+        owner: tomcat
+        group: tomcat
+        mode: 0755
+        recurse: yes
+
+    - name: Install Tomcat init script
+      copy: src=tomcat.service dest=/etc/systemd/system/tomcat.service mode=0755
+
+    - name: Start Tomcat
+      service: 
+        name: tomcat
+        state: started
+        enabled: true
+        daemon_reload: true
+      
+    - name: Configure Tomcat users
+      template: src=tomcat-users.xml dest=/opt/tomcat/conf/
+
+
+
+
